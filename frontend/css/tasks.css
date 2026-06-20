@@ -1,0 +1,715 @@
+/* =============================================
+   TaskFlow — Phase 4 Tasks Styles
+   =============================================
+   Styles for the task management section inside
+   project-detail.html. Covers:
+     - Task section header & controls
+     - Create Task form (collapsible)
+     - Task list with cards
+     - Priority badges (Low / Medium / High)
+     - Status dropdown (inline)
+     - Task Edit / Delete modals
+     - Empty state & animations
+   ============================================= */
+
+/* =============================================
+   Task Section Wrapper
+   ============================================= */
+.tasks-section {
+    margin-top: 0;
+}
+
+.tasks-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.25rem;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.tasks-title-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+/* Small badge showing number of tasks */
+.task-count-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 24px;
+    height: 24px;
+    padding: 0 6px;
+    background: rgba(99, 102, 241, 0.2);
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    border-radius: 99px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--primary-300);
+    transition: all 0.25s ease;
+}
+
+/* "New Task" button */
+.btn-add-task {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem 1rem;
+    background: var(--gradient-primary);
+    border: none;
+    border-radius: var(--radius-md);
+    color: white;
+    font-family: var(--font-family);
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-base);
+    box-shadow: 0 2px 10px rgba(99, 102, 241, 0.25);
+}
+
+.btn-add-task:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(99, 102, 241, 0.35);
+}
+
+.btn-add-task svg {
+    width: 15px;
+    height: 15px;
+    stroke: white;
+    fill: none;
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+/* =============================================
+   Create Task Form (Collapsible Panel)
+   ============================================= */
+.create-task-panel {
+    background: var(--bg-glass);
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    display: none;  /* hidden by default, toggled by JS */
+    animation: task-panel-enter 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.create-task-panel.open {
+    display: block;
+}
+
+@keyframes task-panel-enter {
+    from {
+        opacity: 0;
+        transform: translateY(-12px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.create-task-panel h4 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.create-task-panel h4 svg {
+    width: 16px;
+    height: 16px;
+    stroke: var(--primary-400);
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+/* Two-column grid for the form */
+.task-form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.task-form-grid .form-group.full-width {
+    grid-column: 1 / -1;
+}
+
+/* Select dropdowns inside forms */
+.select-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.select-wrapper select {
+    width: 100%;
+    padding: 0.75rem 2.5rem 0.75rem 0.875rem;
+    background: var(--bg-glass);
+    border: 1.5px solid var(--border-glass);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    font-family: var(--font-family);
+    font-size: 0.9rem;
+    appearance: none;
+    -webkit-appearance: none;
+    cursor: pointer;
+    transition: all var(--transition-base);
+    outline: none;
+}
+
+.select-wrapper select:focus {
+    border-color: var(--primary-500);
+    background: rgba(99, 102, 241, 0.05);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.select-wrapper select option {
+    background: #1e293b;
+    color: var(--text-primary);
+}
+
+/* Custom chevron arrow */
+.select-wrapper::after {
+    content: '';
+    position: absolute;
+    right: 0.85rem;
+    width: 10px;
+    height: 6px;
+    background: var(--text-muted);
+    clip-path: polygon(0 0, 100% 0, 50% 100%);
+    pointer-events: none;
+    transition: background var(--transition-fast);
+}
+
+.select-wrapper:focus-within::after {
+    background: var(--primary-400);
+}
+
+/* Textarea without icon padding */
+.textarea-wrapper textarea {
+    width: 100%;
+    padding: 0.75rem 0.875rem;
+    background: var(--bg-glass);
+    border: 1.5px solid var(--border-glass);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    font-family: var(--font-family);
+    font-size: 0.9rem;
+    resize: vertical;
+    min-height: 80px;
+    outline: none;
+    transition: all var(--transition-base);
+    line-height: 1.5;
+}
+
+.textarea-wrapper textarea::placeholder {
+    color: var(--text-muted);
+}
+
+.textarea-wrapper textarea:focus {
+    border-color: var(--primary-500);
+    background: rgba(99, 102, 241, 0.05);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+/* Form action buttons row */
+.task-form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    margin-top: 1.25rem;
+}
+
+.btn-cancel-task {
+    padding: 0.6rem 1.25rem;
+    background: transparent;
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+    font-family: var(--font-family);
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.btn-cancel-task:hover {
+    background: var(--bg-glass);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: var(--text-primary);
+}
+
+.btn-create-task {
+    padding: 0.6rem 1.25rem;
+    background: var(--gradient-primary);
+    border: none;
+    border-radius: var(--radius-md);
+    color: white;
+    font-family: var(--font-family);
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    transition: all var(--transition-base);
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.25);
+}
+
+.btn-create-task:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35);
+}
+
+.btn-create-task:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* =============================================
+   Task Filter Bar
+   ============================================= */
+.task-filters {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+    flex-wrap: wrap;
+}
+
+.filter-btn {
+    padding: 0.35rem 0.85rem;
+    background: var(--bg-glass);
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-full);
+    color: var(--text-secondary);
+    font-family: var(--font-family);
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.filter-btn:hover {
+    background: rgba(99, 102, 241, 0.08);
+    border-color: rgba(99, 102, 241, 0.2);
+    color: var(--text-primary);
+}
+
+.filter-btn.active {
+    background: rgba(99, 102, 241, 0.15);
+    border-color: rgba(99, 102, 241, 0.35);
+    color: var(--primary-300);
+    font-weight: 600;
+}
+
+/* =============================================
+   Task List Container
+   ============================================= */
+.tasks-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+/* =============================================
+   Task Card
+   ============================================= */
+.task-card {
+    background: var(--bg-glass);
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-md);
+    padding: 1rem 1.25rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    transition: all var(--transition-base);
+    animation: task-card-enter 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+    position: relative;
+}
+
+@keyframes task-card-enter {
+    from {
+        opacity: 0;
+        transform: translateX(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.task-card:hover {
+    background: rgba(99, 102, 241, 0.04);
+    border-color: rgba(99, 102, 241, 0.15);
+    transform: translateX(3px);
+}
+
+/* Left accent bar — color changes based on priority */
+.task-card::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    border-radius: var(--radius-md) 0 0 var(--radius-md);
+    background: var(--priority-color, var(--primary-500));
+    transition: width 0.2s ease;
+}
+
+.task-card:hover::before {
+    width: 4px;
+}
+
+/* Priority accent colours */
+.task-card.priority-low::before    { --priority-color: #34d399; }
+.task-card.priority-medium::before { --priority-color: #f59e0b; }
+.task-card.priority-high::before   { --priority-color: #f87171; }
+
+/* Left: main task info */
+.task-body {
+    flex: 1;
+    min-width: 0;
+}
+
+.task-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.3rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.task-card.completed .task-title {
+    text-decoration: line-through;
+    color: var(--text-muted);
+}
+
+.task-meta-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin-top: 0.5rem;
+}
+
+/* =============================================
+   Priority Badge
+   ============================================= */
+.priority-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: var(--radius-full);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+}
+
+.priority-badge.low {
+    background: rgba(52, 211, 153, 0.12);
+    border: 1px solid rgba(52, 211, 153, 0.25);
+    color: #34d399;
+}
+
+.priority-badge.medium {
+    background: rgba(245, 158, 11, 0.12);
+    border: 1px solid rgba(245, 158, 11, 0.25);
+    color: #fbbf24;
+}
+
+.priority-badge.high {
+    background: rgba(248, 113, 113, 0.12);
+    border: 1px solid rgba(248, 113, 113, 0.25);
+    color: #f87171;
+}
+
+.priority-badge .priority-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: currentColor;
+    flex-shrink: 0;
+}
+
+/* =============================================
+   Assignee Chip
+   ============================================= */
+.assignee-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.2rem 0.6rem;
+    background: rgba(99, 102, 241, 0.08);
+    border: 1px solid rgba(99, 102, 241, 0.15);
+    border-radius: var(--radius-full);
+    font-size: 0.75rem;
+    color: var(--primary-300);
+}
+
+.assignee-chip svg {
+    width: 11px;
+    height: 11px;
+    stroke: var(--primary-400);
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    flex-shrink: 0;
+}
+
+/* =============================================
+   Due Date Chip
+   ============================================= */
+.due-date-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.2rem 0.6rem;
+    background: var(--bg-glass);
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-full);
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.due-date-chip svg {
+    width: 11px;
+    height: 11px;
+    stroke: var(--text-muted);
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    flex-shrink: 0;
+}
+
+.due-date-chip.overdue {
+    background: rgba(239, 68, 68, 0.08);
+    border-color: rgba(239, 68, 68, 0.2);
+    color: #fca5a5;
+}
+
+.due-date-chip.overdue svg {
+    stroke: #f87171;
+}
+
+/* =============================================
+   Inline Status Dropdown
+   ============================================= */
+.status-select {
+    padding: 0.25rem 1.75rem 0.25rem 0.6rem;
+    border-radius: var(--radius-full);
+    font-family: var(--font-family);
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    outline: none;
+    border: 1px solid;
+    transition: all var(--transition-fast);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%2394a3b8' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.5rem center;
+}
+
+.status-select.todo {
+    background-color: rgba(100, 116, 139, 0.12);
+    border-color: rgba(100, 116, 139, 0.25);
+    color: #94a3b8;
+}
+
+.status-select.in-progress {
+    background-color: rgba(99, 102, 241, 0.12);
+    border-color: rgba(99, 102, 241, 0.25);
+    color: #a5b4fc;
+}
+
+.status-select.completed {
+    background-color: rgba(52, 211, 153, 0.12);
+    border-color: rgba(52, 211, 153, 0.25);
+    color: #34d399;
+}
+
+.status-select option {
+    background: #1e293b;
+    color: var(--text-primary);
+}
+
+/* =============================================
+   Task Card Action Buttons
+   ============================================= */
+.task-actions {
+    display: flex;
+    gap: 0.4rem;
+    flex-shrink: 0;
+    opacity: 0;
+    transition: opacity var(--transition-fast);
+}
+
+.task-card:hover .task-actions {
+    opacity: 1;
+}
+
+.btn-task-action {
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-glass);
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    color: var(--text-muted);
+}
+
+.btn-task-action svg {
+    width: 14px;
+    height: 14px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.btn-task-action.edit:hover {
+    background: rgba(99, 102, 241, 0.15);
+    border-color: rgba(99, 102, 241, 0.3);
+    color: var(--primary-300);
+}
+
+.btn-task-action.delete:hover {
+    background: rgba(239, 68, 68, 0.12);
+    border-color: rgba(239, 68, 68, 0.25);
+    color: #fca5a5;
+}
+
+/* =============================================
+   Tasks Empty State
+   ============================================= */
+.tasks-empty {
+    text-align: center;
+    padding: 3rem 1rem;
+    display: none;
+}
+
+.tasks-empty svg {
+    width: 48px;
+    height: 48px;
+    stroke: var(--text-muted);
+    fill: none;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+.tasks-empty h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 0.4rem;
+}
+
+.tasks-empty p {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+}
+
+/* =============================================
+   Task Skeleton Loader
+   ============================================= */
+.task-skeleton {
+    height: 68px;
+    border-radius: var(--radius-md);
+    background: linear-gradient(90deg, var(--bg-glass) 25%, rgba(255,255,255,0.06) 50%, var(--bg-glass) 75%);
+    background-size: 200% 100%;
+    animation: skeleton-wave 1.5s ease-in-out infinite;
+    margin-bottom: 0.75rem;
+}
+
+/* =============================================
+   Edit Task Modal — Extra Fields
+   ============================================= */
+.modal-two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+/* Input without icon (task date / assign fields) */
+.input-plain {
+    width: 100%;
+    padding: 0.75rem 0.875rem;
+    background: var(--bg-glass);
+    border: 1.5px solid var(--border-glass);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    font-family: var(--font-family);
+    font-size: 0.9rem;
+    outline: none;
+    transition: all var(--transition-base);
+}
+
+.input-plain::placeholder {
+    color: var(--text-muted);
+}
+
+.input-plain:focus {
+    border-color: var(--primary-500);
+    background: rgba(99, 102, 241, 0.05);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+/* Date input calendar icon color */
+.input-plain[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(0.6);
+    cursor: pointer;
+}
+
+/* =============================================
+   Responsive Adjustments
+   ============================================= */
+@media (max-width: 600px) {
+    .task-form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .modal-two-col {
+        grid-template-columns: 1fr;
+    }
+
+    .task-card {
+        flex-wrap: wrap;
+    }
+
+    .task-actions {
+        opacity: 1;
+    }
+
+    .tasks-section-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}

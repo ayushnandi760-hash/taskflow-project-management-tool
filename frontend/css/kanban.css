@@ -1,0 +1,681 @@
+/* =============================================
+   TaskFlow — Phase 5: Kanban Board Styles
+   =============================================
+   All styles for kanban.html.
+
+   This file covers:
+     - Full-viewport board layout
+     - Three columns (To Do / In Progress / Completed)
+     - Drag-and-drop visual states
+     - Kanban task cards (richer than list cards)
+     - Priority badges  (reused classes from tasks.css)
+     - Assignee avatars + due date chips
+     - Toast & loading overlay
+     - Responsive collapse to vertical stack
+   ============================================= */
+
+/* =============================================
+   Page Layout
+   ============================================= */
+.kanban-page {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    overflow: hidden;
+}
+
+/* Main scrollable board area */
+.kanban-main {
+    flex: 1;
+    padding: 1.5rem 2rem 2rem;
+    overflow-x: auto;   /* horizontal scroll if board is wider than viewport */
+    overflow-y: hidden;
+}
+
+/* =============================================
+   Board Header  (title + back button + refresh)
+   ============================================= */
+.board-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.75rem;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.board-header-left {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.board-back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.45rem 1rem;
+    background: var(--bg-glass);
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+    font-family: var(--font-family);
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all var(--transition-fast);
+}
+
+.board-back-btn:hover {
+    background: rgba(99, 102, 241, 0.08);
+    border-color: rgba(99, 102, 241, 0.2);
+    color: var(--text-primary);
+    transform: translateX(-2px);
+}
+
+.board-back-btn svg {
+    width: 15px;
+    height: 15px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.board-title-wrap h1 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -0.02em;
+}
+
+.board-title-wrap p {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    margin-top: 0.1rem;
+}
+
+.board-header-right {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+/* Refresh board button */
+.btn-refresh-board {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.45rem 1rem;
+    background: var(--bg-glass);
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+    font-family: var(--font-family);
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--transition-base);
+}
+
+.btn-refresh-board:hover {
+    background: rgba(99, 102, 241, 0.08);
+    border-color: rgba(99, 102, 241, 0.2);
+    color: var(--text-primary);
+}
+
+.btn-refresh-board svg {
+    width: 15px;
+    height: 15px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: transform 0.5s ease;
+}
+
+.btn-refresh-board.spinning svg {
+    animation: spin-once 0.6s ease;
+}
+
+@keyframes spin-once {
+    to { transform: rotate(360deg); }
+}
+
+/* =============================================
+   Board — Three-Column Grid
+   ============================================= */
+.kanban-board {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(300px, 1fr));
+    gap: 1.25rem;
+    align-items: start;
+    min-height: calc(100vh - 200px);
+}
+
+/* =============================================
+   Column
+   ============================================= */
+.kanban-col {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-lg);
+    display: flex;
+    flex-direction: column;
+    min-height: 500px;
+    transition: all var(--transition-base);
+    position: relative;
+}
+
+/* ---- Column accent colours ---- */
+/* Each column gets a unique top border + header colour */
+.kanban-col.col-todo {
+    --col-color: #94a3b8;
+    --col-glow:  rgba(148, 163, 184, 0.08);
+}
+
+.kanban-col.col-inprogress {
+    --col-color: #818cf8;
+    --col-glow:  rgba(129, 140, 248, 0.10);
+}
+
+.kanban-col.col-completed {
+    --col-color: #34d399;
+    --col-glow:  rgba(52, 211, 153, 0.10);
+}
+
+.kanban-col::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--col-color);
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    opacity: 0.7;
+}
+
+/* ---- Column Header ---- */
+.col-header {
+    padding: 1.1rem 1.25rem 0.9rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border-glass);
+}
+
+.col-title {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.col-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--col-color);
+    box-shadow: 0 0 8px var(--col-color);
+    flex-shrink: 0;
+}
+
+.col-title h2 {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+/* Task count pill inside the column header */
+.col-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 22px;
+    height: 22px;
+    padding: 0 6px;
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-full);
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--col-color);
+    transition: all 0.25s ease;
+}
+
+/* ---- Column Drop Zone ---- */
+/* The cards container is the actual drop zone for drag-and-drop */
+.col-cards {
+    flex: 1;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    min-height: 80px;                /* always tall enough to drop onto */
+    transition: background 0.2s ease;
+}
+
+/* ---- DRAG-OVER STATE ---- */
+/* When a dragged card hovers over a column, glow it */
+.kanban-col.drag-over .col-cards {
+    background: var(--col-glow);
+}
+
+.kanban-col.drag-over {
+    border-color: var(--col-color);
+    box-shadow: 0 0 0 2px var(--col-color), 0 8px 32px var(--col-glow);
+}
+
+/* Ghost placeholder shown where card will drop */
+.drag-placeholder {
+    border: 2px dashed var(--col-color);
+    border-radius: var(--radius-md);
+    height: 110px;
+    background: var(--col-glow);
+    opacity: 0.6;
+    animation: placeholder-pulse 1s ease-in-out infinite alternate;
+    pointer-events: none;
+}
+
+@keyframes placeholder-pulse {
+    from { opacity: 0.4; }
+    to   { opacity: 0.8; }
+}
+
+/* =============================================
+   Kanban Card
+   ============================================= */
+.k-card {
+    background: var(--bg-card);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-md);
+    padding: 0.9rem 1rem;
+    cursor: grab;
+    transition: transform 0.15s ease, box-shadow 0.15s ease,
+                opacity 0.15s ease, border-color 0.2s ease;
+    position: relative;
+    animation: k-card-enter 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+    user-select: none;          /* prevent text selection while dragging */
+    -webkit-user-select: none;
+}
+
+@keyframes k-card-enter {
+    from { opacity: 0; transform: translateY(10px) scale(0.98); }
+    to   { opacity: 1; transform: translateY(0)   scale(1);    }
+}
+
+/* Priority-coloured left accent bar */
+.k-card::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    border-radius: var(--radius-md) 0 0 var(--radius-md);
+    background: var(--kcard-accent, var(--primary-500));
+    transition: width 0.15s ease;
+}
+
+.k-card.priority-low::before    { --kcard-accent: #34d399; }
+.k-card.priority-medium::before { --kcard-accent: #f59e0b; }
+.k-card.priority-high::before   { --kcard-accent: #f87171; }
+
+.k-card:hover {
+    border-color: rgba(99, 102, 241, 0.25);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+    transform: translateY(-2px);
+}
+
+.k-card:hover::before {
+    width: 5px;
+}
+
+/* ---- WHILE BEING DRAGGED ---- */
+.k-card.dragging {
+    opacity: 0.35;          /* the source card fades */
+    cursor: grabbing;
+    transform: scale(0.98);
+}
+
+/* ---- Card Content ---- */
+.k-card-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.6rem;
+    line-height: 1.4;
+    word-break: break-word;
+}
+
+.k-card.completed .k-card-title {
+    text-decoration: line-through;
+    color: var(--text-muted);
+}
+
+/* Bottom row: priority badge + assignee + due date */
+.k-card-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Priority badge — same classes as tasks.css */
+.k-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.28rem;
+    padding: 0.18rem 0.55rem;
+    border-radius: var(--radius-full);
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    flex-shrink: 0;
+}
+
+.k-badge.low    { background: rgba(52,211,153,0.12);  border: 1px solid rgba(52,211,153,0.25);  color:#34d399; }
+.k-badge.medium { background: rgba(245,158,11,0.12);  border: 1px solid rgba(245,158,11,0.25);  color:#fbbf24; }
+.k-badge.high   { background: rgba(248,113,113,0.12); border: 1px solid rgba(248,113,113,0.25); color:#f87171; }
+
+.k-badge .k-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: currentColor;
+    flex-shrink: 0;
+}
+
+/* Assignee avatar circle */
+.k-assignee {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.72rem;
+    color: var(--primary-300);
+    background: rgba(99,102,241,0.08);
+    border: 1px solid rgba(99,102,241,0.15);
+    border-radius: var(--radius-full);
+    padding: 0.15rem 0.5rem 0.15rem 0.25rem;
+    flex-shrink: 0;
+}
+
+.k-avatar {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--gradient-primary);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.6rem;
+    font-weight: 700;
+    color: white;
+    flex-shrink: 0;
+}
+
+/* Due date chip */
+.k-due {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.71rem;
+    color: var(--text-muted);
+    background: var(--bg-glass);
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-full);
+    padding: 0.18rem 0.5rem;
+    flex-shrink: 0;
+}
+
+.k-due.overdue {
+    background: rgba(239,68,68,0.08);
+    border-color: rgba(239,68,68,0.2);
+    color: #fca5a5;
+}
+
+.k-due svg {
+    width: 10px;
+    height: 10px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    flex-shrink: 0;
+}
+
+/* =============================================
+   Column Empty State
+   ============================================= */
+.col-empty {
+    text-align: center;
+    padding: 2rem 1rem;
+    color: var(--text-muted);
+    font-size: 0.82rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.col-empty svg {
+    width: 32px;
+    height: 32px;
+    stroke: var(--text-muted);
+    fill: none;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+/* =============================================
+   Skeleton Loaders  (inside each column)
+   ============================================= */
+.k-skeleton {
+    height: 90px;
+    border-radius: var(--radius-md);
+    background: linear-gradient(90deg,
+        var(--bg-glass) 25%,
+        rgba(255,255,255,0.06) 50%,
+        var(--bg-glass) 75%);
+    background-size: 200% 100%;
+    animation: skeleton-wave 1.5s ease-in-out infinite;
+}
+
+/* =============================================
+   Status-update Spinner Overlay
+   ============================================= */
+/* Shows a small spinning ring on the card while
+   the PATCH request is in-flight                */
+.k-card.syncing::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius-md);
+    background: rgba(0,0,0,0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(2px);
+}
+
+.k-card.syncing::before {
+    /* override the accent bar with an animated ring */
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 22px;
+    height: 22px;
+    border: 2.5px solid rgba(99,102,241,0.3);
+    border-top-color: var(--primary-400);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    z-index: 10;
+}
+
+/* =============================================
+   Toast Notification  (reuses same structure as project-detail)
+   ============================================= */
+.toast {
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.75rem 1.25rem;
+    background: var(--bg-card);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    font-family: var(--font-family);
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    z-index: 9999;
+    opacity: 0;
+    transform: translateY(12px);
+    transition: all 0.3s cubic-bezier(0.16,1,0.3,1);
+    pointer-events: none;
+    max-width: 340px;
+}
+
+.toast.show {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+.toast-success { border-left: 3px solid var(--accent-500); }
+.toast-error   { border-left: 3px solid var(--error);      }
+
+/* =============================================
+   Navbar extras for kanban
+   ============================================= */
+.navbar-center {
+    display: flex;
+    align-items: center;
+}
+
+.nav-links {
+    display: flex;
+    gap: 0.25rem;
+}
+
+.nav-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.45rem 0.9rem;
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all var(--transition-fast);
+}
+
+.nav-link svg {
+    width: 15px;
+    height: 15px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.nav-link:hover,
+.nav-link.active {
+    background: rgba(99,102,241,0.1);
+    color: var(--primary-300);
+}
+
+/* Small user info in navbar */
+.navbar-user {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.user-avatar-sm {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: var(--gradient-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: white;
+}
+
+.user-name-sm {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+/* Phase 6: Comments Button on Kanban Card */
+.k-comments-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 0.2rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-sm);
+    transition: all var(--transition-fast);
+}
+
+.k-comments-btn:hover {
+    color: var(--primary-400);
+    background: rgba(99, 102, 241, 0.1);
+}
+
+/* =============================================
+   Responsive  — collapse to vertical stack
+   ============================================= */
+@media (max-width: 900px) {
+    .kanban-board {
+        grid-template-columns: 1fr;
+        min-height: unset;
+    }
+
+    .kanban-main {
+        padding: 1rem;
+        overflow-x: hidden;
+    }
+
+    .kanban-col {
+        min-height: 200px;
+    }
+
+    .board-title-wrap h1 {
+        font-size: 1.1rem;
+    }
+}
+
+@media (max-width: 500px) {
+    .board-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}

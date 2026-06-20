@@ -16,42 +16,40 @@
 
 ## ✨ Features
 
-### 🔐 Phase 1 — Authentication
+### 🔐 Authentication & Security
 - User registration with input validation
 - Secure login with **bcrypt** password hashing
 - **JWT**-based session management (30-day tokens)
-- Protected routes via auth middleware
-- Password visibility toggle & form animations
+- Protected API routes via auth middleware
+- Password visibility toggle & animated form UI
 
-### 📁 Phase 2 — Project Management
+### 📁 Project Management
 - Create, read, update, and delete projects
 - Projects scoped to the authenticated user
 - Project dashboard with search & card-based layout
 
-### 👥 Phase 3 — Team Collaboration
+### 👥 Team Collaboration
 - Add members to projects by email
 - View all members of a project
 - Remove members (owner-only action)
 - Role-based access control (Owner vs Member)
 
-### ✅ Phase 4 — Task Management
+### ✅ Task Management
 - Full CRUD for tasks within projects
 - Assign tasks to project members
 - Set **priority** (Low / Medium / High) and **status** (To Do / In Progress / Completed)
-- Due date tracking
-- Filter, sort, and search tasks
+- Due date tracking with filter, sort, and search
 
-### 📋 Phase 5 — Kanban Board
+### 📋 Kanban Board
 - Visual drag-and-drop board with three columns: **To Do → In Progress → Completed**
 - Real-time status updates on card drop
 - Priority badges and assignee indicators
-- Responsive board layout with smooth drag animations
+- Responsive layout with smooth drag animations
 
-### 💬 Phase 6 — Comments & Activity Log
-- Comment on individual tasks
-- View comment threads with timestamps and author info
+### 💬 Comments & Activity Log
+- Comment threads on individual tasks with timestamps and author info
 - Delete your own comments
-- Automatic **activity log** tracking all actions in a project
+- Automatic **activity log** tracking every action in a project
 - Activity timeline feed on the project detail page
 
 ---
